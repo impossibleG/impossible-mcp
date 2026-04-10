@@ -1,0 +1,10 @@
+services:
+  mcp:
+    build: .
+    environment:
+      MCP_TRANSPORT: http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 3333
+    ports:
+      - "3333:3333"
+    restart: unless-stopped
