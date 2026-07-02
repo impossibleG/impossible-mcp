@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "impossible-template": {
+      "command": "node",
+      "args": ["/absolute/path/to/impossible-mcp-template/dist/cli.js"]
+    }
+  }
+}
