@@ -1,0 +1,16 @@
+name: Feature proposal
+description: Propose a capability that belongs in the reusable template
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Explain the reusable problem without prescribing an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
