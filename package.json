@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "check": "tsc --noEmit",
+    "check:package": "node scripts/check-generated.mjs",
     "clean": "node scripts/clean.mjs",
     "dev": "tsx watch src/cli.ts",
     "format": "prettier --check .",
@@ -19,7 +20,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "verify": "npm run format && npm run lint && npm run check && npm run test:coverage && npm run build"
+    "verify": "npm run format && npm run lint && npm run check && npm run test:coverage && npm run build && npm run check:package"
   },
   "dependencies": {
     "@modelcontextprotocol/node": "2.0.0",
