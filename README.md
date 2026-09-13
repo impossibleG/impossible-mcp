@@ -81,7 +81,10 @@ The project separates transport wiring from capability registration. Tests can i
 - [Configuration](docs/configuration.md)
 - [Deployment](docs/deployment.md)
 - [Operations](docs/operations.md)
+- [Observability](docs/observability.md)
+- [Security model](docs/security-model.md)
 - [Testing](docs/testing.md)
+- [Troubleshooting](docs/troubleshooting.md)
 
 ## License
 
