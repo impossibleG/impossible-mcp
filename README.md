@@ -1,11 +1,14 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
-  <img alt="Impossible MCP Template" src="docs/assets/banner-light.svg" width="100%">
-</picture>
+<p align="center">
+  <img src="docs/assets/impossible-mcp-template-header.png" alt="Impossible G — MCP Template" width="860">
+</p>
 
 # Impossible MCP Template
 
 A TypeScript foundation for building Model Context Protocol servers that run locally over stdio or remotely over Streamable HTTP. Fork it, replace the example capabilities, and keep the operational pieces.
+
+<p align="center">
+  <img src="docs/assets/impossible-mcp-template-scene.png" alt="MCP transports connecting a server to tools, resources, and prompts" width="100%">
+</p>
 
 ## Included
 

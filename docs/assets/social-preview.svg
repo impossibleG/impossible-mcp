@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title">
-  <title id="title">Impossible MCP Template</title><rect width="1280" height="640" fill="#09090b"/>
-  <rect x="52" y="52" width="1176" height="536" fill="none" stroke="#2de2e6" stroke-width="6"/>
-  <text x="100" y="235" fill="#f4f1e8" font-family="Arial, sans-serif" font-weight="700" font-size="72">IMPOSSIBLE</text>
-  <text x="100" y="344" fill="#2de2e6" font-family="Arial, sans-serif" font-weight="700" font-size="98">MCP TEMPLATE</text>
-  <text x="104" y="422" fill="#b8b5ad" font-family="Arial, sans-serif" font-size="32">TypeScript · stdio · Streamable HTTP</text>
-  <circle cx="1070" cy="320" r="78" fill="none" stroke="#7447ff" stroke-width="18"/><circle cx="1070" cy="320" r="23" fill="#ff6b57"/>
-</svg>
