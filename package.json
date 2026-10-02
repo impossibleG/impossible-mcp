@@ -23,7 +23,7 @@
     "verify": "npm run format && npm run lint && npm run check && npm run test:coverage && npm run build && npm run check:package"
   },
   "dependencies": {
-    "@modelcontextprotocol/node": "2.0.0",
+    "@modelcontextprotocol/node": "2.1.0",
     "@modelcontextprotocol/server": "2.0.0",
     "commander": "15.0.0",
     "pino": "10.3.1",
