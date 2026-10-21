@@ -1,3 +1,4 @@
+import { request as httpRequest } from "node:http";
 import { connect } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
 import pino from "pino";
@@ -59,6 +60,43 @@ describe("HTTP runtime", () => {
     const health = await fetch("http://127.0.0.1:33434/healthz");
     expect(health.status).toBe(200);
   });
+
+  it("rejects MCP requests from hosts and origins outside the allowlist", async () => {
+    const config = loadConfig({
+      MCP_TRANSPORT: "http",
+      MCP_PORT: "33436",
+      MCP_LOG_LEVEL: "silent",
+    });
+    runtime = await startHttp(config, pino({ level: "silent" }));
+    const rebound = await postMcp(33436, { host: "attacker.example:33436" });
+    const crossOrigin = await postMcp(33436, {
+      host: "127.0.0.1:33436",
+      origin: "https://attacker.example",
+    });
+    const local = await postMcp(33436, {
+      host: "localhost:33436",
+      origin: "http://localhost:5173",
+    });
+    expect(rebound.status).toBe(403);
+    expect(rebound.body).toContain("Invalid Host: attacker.example");
+    expect(crossOrigin.status).toBe(403);
+    expect(crossOrigin.body).toContain("Invalid Origin: attacker.example");
+    expect(local.status).not.toBe(403);
+  });
+
+  it("accepts hosts added to the allowlist", async () => {
+    const config = loadConfig({
+      MCP_TRANSPORT: "http",
+      MCP_PORT: "33437",
+      MCP_LOG_LEVEL: "silent",
+      MCP_ALLOWED_HOSTS: "mcp.example.com",
+    });
+    runtime = await startHttp(config, pino({ level: "silent" }));
+    const allowed = await postMcp(33437, { host: "mcp.example.com" });
+    const loopback = await postMcp(33437, { host: "127.0.0.1:33437" });
+    expect(allowed.status).not.toBe(403);
+    expect(loopback.status).toBe(403);
+  });
 });
 
 function rawRequest(port: number, payload: string): Promise<string> {
@@ -69,5 +107,39 @@ function rawRequest(port: number, payload: string): Promise<string> {
       socket.destroy();
     });
     socket.once("error", reject);
+  });
+}
+
+function postMcp(
+  port: number,
+  headers: Record<string, string>,
+): Promise<{ status: number; body: string }> {
+  const body = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "ping" });
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(
+      {
+        host: "127.0.0.1",
+        port,
+        path: "/mcp",
+        method: "POST",
+        headers: {
+          ...headers,
+          accept: "application/json, text/event-stream",
+          "content-type": "application/json",
+        },
+      },
+      (response) => {
+        let text = "";
+        response.setEncoding("utf8");
+        response.on("data", (chunk: string) => {
+          text += chunk;
+        });
+        response.on("end", () => {
+          resolve({ status: response.statusCode ?? 0, body: text });
+        });
+      },
+    );
+    request.once("error", reject);
+    request.end(body);
   });
 }
