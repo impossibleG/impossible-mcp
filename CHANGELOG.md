@@ -5,3 +5,4 @@ This project follows Semantic Versioning. Release notes describe protocol suppor
 ## Unreleased
 
 - Initial TypeScript MCP server template.
+- HTTP: a request with a malformed `Host` header or request target no longer crashes the process.
