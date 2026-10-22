@@ -7,3 +7,4 @@ This project follows Semantic Versioning. Release notes describe protocol suppor
 - Initial TypeScript MCP server template.
 - HTTP: a request with a malformed `Host` header or request target no longer crashes the process.
 - HTTP: the MCP endpoint validates `Host` and `Origin` headers against `MCP_ALLOWED_HOSTS` and `MCP_ALLOWED_ORIGINS` (localhost by default) to block DNS rebinding.
+- Build: `npm run verify` (and therefore CI) runs the privacy check, which now also catches unescaped Windows profile paths.
