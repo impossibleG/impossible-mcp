@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 const booleanFromString = z.preprocess((value) => value === true || value === "true", z.boolean());
+const hostnameList = z.string().transform((value) =>
+  value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean),
+);
+const localhostNames = ["localhost", "127.0.0.1", "[::1]"];
 
 const environmentSchema = z.object({
   MCP_TRANSPORT: z.enum(["stdio", "http"]).default("stdio"),
@@ -11,6 +18,8 @@ const environmentSchema = z.object({
     .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
     .default("info"),
   MCP_HTTP_JSON_RESPONSE: booleanFromString.default(false),
+  MCP_ALLOWED_HOSTS: hostnameList.default(() => [...localhostNames]),
+  MCP_ALLOWED_ORIGINS: hostnameList.default(() => [...localhostNames]),
 });
 
 export type AppConfig = {
@@ -20,6 +29,8 @@ export type AppConfig = {
   path: string;
   logLevel: z.infer<typeof environmentSchema>["MCP_LOG_LEVEL"];
   httpJsonResponse: boolean;
+  allowedHosts: string[];
+  allowedOrigins: string[];
 };
 
 export function loadConfig(environment: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -35,5 +46,7 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): AppCon
     path: parsed.data.MCP_PATH,
     logLevel: parsed.data.MCP_LOG_LEVEL,
     httpJsonResponse: parsed.data.MCP_HTTP_JSON_RESPONSE,
+    allowedHosts: parsed.data.MCP_ALLOWED_HOSTS,
+    allowedOrigins: parsed.data.MCP_ALLOWED_ORIGINS,
   };
 }

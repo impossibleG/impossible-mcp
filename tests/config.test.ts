@@ -10,7 +10,15 @@ describe("loadConfig", () => {
       path: "/mcp",
       logLevel: "info",
       httpJsonResponse: false,
+      allowedHosts: ["localhost", "127.0.0.1", "[::1]"],
+      allowedOrigins: ["localhost", "127.0.0.1", "[::1]"],
     });
+  });
+
+  it("parses comma-separated host and origin allowlists", () => {
+    expect(
+      loadConfig({ MCP_ALLOWED_HOSTS: "mcp.example.com, localhost", MCP_ALLOWED_ORIGINS: "" }),
+    ).toMatchObject({ allowedHosts: ["mcp.example.com", "localhost"], allowedOrigins: [] });
   });
 
   it("accepts HTTP configuration", () => {

@@ -1,5 +1,9 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
-import { createMcpHandler } from "@modelcontextprotocol/server";
+import {
+  createMcpHandler,
+  validateHostHeader,
+  validateOriginHeader,
+} from "@modelcontextprotocol/server";
 import { toNodeHandler, type NodeIncomingMessageLike } from "@modelcontextprotocol/node";
 import type { Logger } from "pino";
 import type { AppConfig } from "./config.js";
@@ -53,6 +57,19 @@ export async function startHttp(config: AppConfig, logger: Logger): Promise<Http
     if (!request.method) {
       response.writeHead(400, { "content-type": "application/json" });
       response.end(JSON.stringify({ error: "missing_method" }));
+      return;
+    }
+    // DNS rebinding protection: a browser can reach a loopback server through an attacker's
+    // domain, so only listed Host names and browser Origins may use the MCP endpoint.
+    const host = validateHostHeader(request.headers.host, config.allowedHosts);
+    const origin = validateOriginHeader(request.headers.origin, config.allowedOrigins);
+    const rejection = !host.ok ? host.message : !origin.ok ? origin.message : undefined;
+    if (rejection) {
+      logger.warn({ host: request.headers.host, origin: request.headers.origin }, rejection);
+      response.writeHead(403, { "content-type": "application/json" });
+      response.end(
+        JSON.stringify({ jsonrpc: "2.0", error: { code: -32000, message: rejection }, id: null }),
+      );
       return;
     }
     await nodeHandler(request as unknown as NodeIncomingMessageLike, response);
