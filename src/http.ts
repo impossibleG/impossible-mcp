@@ -14,11 +14,27 @@ export async function startHttp(config: AppConfig, logger: Logger): Promise<Http
   const nodeHandler = toNodeHandler(mcpHandler);
 
   const server = createServer((request, response) => {
-    void handleRequest(request, response);
+    handleRequest(request, response).catch((error: unknown) => {
+      logger.error({ error }, "HTTP request failed");
+      if (response.headersSent) {
+        response.end();
+        return;
+      }
+      response.writeHead(500, { "content-type": "application/json" });
+      response.end(JSON.stringify({ error: "internal_error" }));
+    });
   });
 
   async function handleRequest(request: IncomingMessage, response: ServerResponse): Promise<void> {
-    const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
+    // Only the path is used for routing, so the client-supplied Host header stays out of URL parsing.
+    let url: URL;
+    try {
+      url = new URL(request.url ?? "/", "http://localhost");
+    } catch {
+      response.writeHead(400, { "content-type": "application/json" });
+      response.end(JSON.stringify({ error: "invalid_request_target" }));
+      return;
+    }
     if (request.method === "GET" && url.pathname === "/healthz") {
       response.writeHead(200, { "content-type": "application/json" });
       response.end(JSON.stringify({ status: "ok" }));
